@@ -20,17 +20,19 @@ public class DisplayRoadQuality extends AppCompatActivity implements SensorEvent
     private Sensor mAccelerometer;
     private Vibrator vib;
     private TextView textView;
+    private float gravity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_road_quality);
         Intent intent = getIntent();
+
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         vib = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
         textView = findViewById(R.id.shakingDetails);
+        gravity = 9.80655f;
 
     }
 
@@ -51,13 +53,13 @@ public class DisplayRoadQuality extends AppCompatActivity implements SensorEvent
         if(sensorEvent != null) {
             float y_acceleration = sensorEvent.values[1];
 
-            if(y_acceleration >= 12f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vib.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+            if(y_acceleration > 9.9f) {
+                //vib.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                 textView.setText("The road is uphill!");
-            } else if(y_acceleration <= 7.6f && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vib.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
+            } else if(y_acceleration < 9.7f ) {
+                //vib.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE));
                 textView.setText("The road is downhill!");
-            } else {
+            }else if (y_acceleration < 9.9f && y_acceleration > 9.7f) {
                 textView.setText("The road is flat!");
             }
         }
