@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Cykel-assistent</string>
+    <string name="Sensor_1">accelerator sensor</string>
+    <string name="x_acclerator">X_ACCELERATION:</string>
+    <string name="y_accelerator">Y_ACCELERATION:</string>
+    <string name="z_accelerator">Z_ACCELERATION:</string>
 </resources>
