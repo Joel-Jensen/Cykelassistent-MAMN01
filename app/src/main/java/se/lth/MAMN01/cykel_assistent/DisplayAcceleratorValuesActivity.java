@@ -15,7 +15,9 @@ import java.util.Arrays;
 
 public class DisplayAcceleratorValuesActivity extends AppCompatActivity implements SensorEventListener {
 
-
+    float alpha = 0.8f;
+    float [] gravity = new float[3];
+    float [] linearAcceleration = new float[3];
 
     private  SensorManager mSensorManager;
     private  Sensor mAccelerometer;
@@ -42,21 +44,20 @@ public class DisplayAcceleratorValuesActivity extends AppCompatActivity implemen
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
-        float alpha = 0.8f;
-        float [] gravity = new float[3];
-        float [] linearAcceleration = new float[3];
+
         String [] values = new String[3];
 
-        gravity[0] = alpha * gravity[0] + (1 - alpha) * sensorEvent.values[0];
-        gravity[1] = alpha * gravity[1] + (1 - alpha) * sensorEvent.values[1];
-        gravity[2] = alpha * gravity[2] + (1 - alpha) * sensorEvent.values[2];
+        //gravity[0] = alpha * gravity[0] + (1 - alpha) * sensorEvent.values[0];
+        //gravity[1] = alpha * gravity[1] + (1 - alpha) * sensorEvent.values[1];
+        //gravity[2] = alpha * gravity[2] + (1 - alpha) * sensorEvent.values[2];
 
-        linearAcceleration[0] = sensorEvent.values[0] - gravity[0];
-        linearAcceleration[1] = sensorEvent.values[1] - gravity[1];
-        linearAcceleration[2] = sensorEvent.values[2] - gravity[2];
+        //linearAcceleration[0] = sensorEvent.values[0] - gravity[0];
+        //linearAcceleration[1] = sensorEvent.values[1] - gravity[1];
+        //linearAcceleration[2] = sensorEvent.values[2] - gravity[2];
 
         for (int i = 0; i < linearAcceleration.length; i++) {
-            values[i] = Float.toString(linearAcceleration[i]);
+            //values[i] = Float.toString(linearAcceleration[i]);
+            values[i] = Float.toString(sensorEvent.values[i]);
         }
 
         TextView xAcceleration = findViewById(R.id.x_acceleration);
@@ -70,9 +71,6 @@ public class DisplayAcceleratorValuesActivity extends AppCompatActivity implemen
         xAcceleration.setTextColor(Color.RED);
         yAcceleration.setTextColor(Color.GREEN);
         zAcceleration.setTextColor(Color.BLUE);
-
-
-
 
     }
 

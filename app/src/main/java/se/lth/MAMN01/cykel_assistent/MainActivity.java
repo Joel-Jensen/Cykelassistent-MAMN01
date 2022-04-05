@@ -29,4 +29,9 @@ public class MainActivity extends AppCompatActivity {
         //intent.putExtra(ACCELERATOR_VALUES, message);
         startActivity(intent);
     }
+
+    public void showRoadQuality (View view) {
+        Intent intent = new Intent(this, DisplayRoadQuality.class);
+        startActivity(intent);
+    }
 }
