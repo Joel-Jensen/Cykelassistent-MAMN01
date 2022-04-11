@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showFallDetection(View view) {
-
+        Intent intent = new Intent(this, FallDetectionView.class);
+        startActivity(intent);
     }
 }
