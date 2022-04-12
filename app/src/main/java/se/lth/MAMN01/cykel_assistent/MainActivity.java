@@ -30,4 +30,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, FallDetectionView.class);
         startActivity(intent);
     }
+
+    public void showSpeedometer(View view) {
+        Intent intent = new Intent(this, Speedometer.class);
+        startActivity(intent);
+    }
 }

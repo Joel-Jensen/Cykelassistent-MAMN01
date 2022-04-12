@@ -6,4 +6,5 @@
     <string name="z_accelerator">Z_ACCELERATION:</string>
     <string name="fall_detection">fall detection</string>
     <string name="road_quality">road quality</string>
+    <string name="speedometer">speedometer</string>
 </resources>
