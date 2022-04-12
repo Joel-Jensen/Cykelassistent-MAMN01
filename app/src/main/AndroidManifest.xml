@@ -3,9 +3,14 @@
     package="se.lth.MAMN01.cykel_assistent">
 
     <uses-permission android:name="android.permission.VIBRATE" />
-    <permission android:name="android.permission.FLASHLIGHT"
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+
+    <permission
+        android:name="android.permission.FLASHLIGHT"
         android:permissionGroup="android.permission-group.HARDWARE_CONTROLS"
-        android:protectionLevel="normal"/>
+        android:protectionLevel="normal" />
 
     <application
         android:allowBackup="true"
@@ -14,6 +19,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Cykelassistent">
+        <activity
+            android:name=".Speedometer"
+            android:exported="false" />
         <activity
             android:name=".HaveFallen"
             android:parentActivityName=".MainActivity">
