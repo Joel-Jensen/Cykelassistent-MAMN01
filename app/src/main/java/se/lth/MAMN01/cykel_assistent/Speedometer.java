@@ -4,9 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
-
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -26,32 +24,31 @@ public class Speedometer extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speedometer);
         speedometerTV = findViewById(R.id.speedometerView);
-        speedometerTV.setText("HELLO");
+        speedometerTV.setText("Speed");
 
         ActivityResultLauncher<String[]> locationPermissionRequest =
-                registerForActivityResult(new ActivityResultContracts
-                        .RequestMultiplePermissions(), result -> {
-                    Boolean fineLocationGranted = result.getOrDefault(
-                            Manifest.permission.ACCESS_FINE_LOCATION, false);
-                    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-                    Boolean coarseLocationGranted = result.getOrDefault(
-                            Manifest.permission.ACCESS_COARSE_LOCATION, false);
-                    if (fineLocationGranted != null && fineLocationGranted) {
-                        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            speedometerTV.setText("False");
-                            return;
-                        }
-                        fusedLocationClient.getLastLocation()
-                                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                                    @Override
-                                    public void onSuccess(Location location) {
-                                        if (location != null) {
-                                            speedometerTV.setText("Latitude: "+ Double.toString(location.getLatitude())
-                                            + "Longitude: "+ Double.toString(location.getLongitude()));
+        registerForActivityResult(new ActivityResultContracts
+                .RequestMultiplePermissions(), result -> {
+            Boolean fineLocationGranted = result.getOrDefault(
+                    Manifest.permission.ACCESS_FINE_LOCATION, false);
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+            Boolean coarseLocationGranted = result.getOrDefault(
+                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
+            if (fineLocationGranted != null && fineLocationGranted) {
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    speedometerTV.setText("False");
+                    return;
+                }
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
 
-                                        }
-                                    }
-                                });
+                                if (location != null) {
+                                    speedometerTV.setText("Speed: " + location.getSpeed() +"m/s");
+                                }
+                            }
+                        });
                 } else if (coarseLocationGranted != null && coarseLocationGranted) {
                     // Only approximate location access granted.
                 } else {
