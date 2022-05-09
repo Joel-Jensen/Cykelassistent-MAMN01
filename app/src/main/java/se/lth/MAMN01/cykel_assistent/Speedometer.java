@@ -24,7 +24,7 @@ public class Speedometer extends AppCompatActivity {
 
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    public static final double TOKILOMETERSPERHOUR = 3.6;
+    private static final int FASTEST_UPDATE_INTERVAL = 125;
     TextView speedometerTV;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -62,7 +62,7 @@ public class Speedometer extends AppCompatActivity {
     private void updateUI(Location location) {
         if(location.hasSpeed()) {
             speedometerTV.setText("Speed: "
-                    + Double.toString(location.getSpeed() * TOKILOMETERSPERHOUR)
+                    + toKilometersPerHour(location.getSpeed())
             + "km/h");
         }
 
@@ -108,10 +108,14 @@ public class Speedometer extends AppCompatActivity {
         });
     }
 
+    public double toKilometersPerHour(double speed){
+        return speed * 3.6;
+    }
+
     private void setLocationRequestProperties(){
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(1000);
+        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         locationRequest.setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
 
     }
