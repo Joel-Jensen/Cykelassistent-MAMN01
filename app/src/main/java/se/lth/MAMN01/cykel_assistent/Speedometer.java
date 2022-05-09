@@ -5,12 +5,9 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
-import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -20,103 +17,67 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-public class Speedometer extends AppCompatActivity {
+import java.util.LinkedList;
+import java.util.List;
 
-    public static final int DEFAULT_UPDATE_INTERVAL = 5;
-    private static final int PERMISSIONS_FINE_LOCATION = 99;
-    private static final int FASTEST_UPDATE_INTERVAL = 125;
-    TextView speedometerTV;
-    private FusedLocationProviderClient fusedLocationProviderClient;
-    private LocationRequest locationRequest;
-    private LocationCallback locationCallback;
+public class Speedometer {
 
-    // Variable to determine if we are tracking location.
-    private boolean requestingLocationUpdates = false;
+    private static final int ABOVE_THRESHOLD = 1;
+    private static final int BELOW_THRESHOLD = -1;
+    private static final int WITHIN_THRESHOLD = 0;
+    private List<Double> samples;
+    private int SAMPLES_PER_SECONDS = 1;
+    private int NUMBER_OF_SAMPLES = 10;
+    private double lowestLimit;
+    private double highestLimit;
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_speedometer);
-        speedometerTV = findViewById(R.id.speedometerView);
-
-        // Set all properties of LocationRequest.
-        setLocationRequestProperties();
-        updateGPS();
-        createLocationCallback();
-        startLocationUpdates();
+    public Speedometer(double highestLimit, double lowestLimit) {
+        samples = new LinkedList<>();
     }
 
-    private void createLocationCallback() {
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                super.onLocationResult(locationResult);
-
-                //Save the location
-                updateUI(locationResult.getLastLocation());
-            }
-        };
-    }
-
-    private void updateUI(Location location) {
-        if(location.hasSpeed()) {
-            speedometerTV.setText("Speed: "
-                    + toKilometersPerHour(location.getSpeed())
-            + "km/h");
+    public int stayingInInterval(double currentSpeed){
+        if(CurrentSpeedStatus() == ABOVE_THRESHOLD){
+            return ABOVE_THRESHOLD;
         }
-
-    }
-
-    @SuppressLint("MissingPermission")
-    private void startLocationUpdates() {
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-        updateGPS();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch (requestCode) {
-            case PERMISSIONS_FINE_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    updateGPS();
-                }
-                else {
-                    Toast.makeText(this, "This app requires permission to use GPS",Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-                break;
+        if(CurrentSpeedStatus() == BELOW_THRESHOLD){
+            return BELOW_THRESHOLD;
         }
+        samples.add(currentSpeed);
+        removeOldSample();
+
+        return WITHIN_THRESHOLD;
     }
 
-    private void updateGPS() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+    public void setLowestLimit(double lowestLimit) {
+        this.lowestLimit = lowestLimit;
+    }
 
-        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
+    public void setHighestLimit(double highestLimit) {
+        this.highestLimit = highestLimit;
+    }
+
+
+    private int CurrentSpeedStatus() {
+        double averageSpeed = samples.stream().mapToDouble(x -> x).sum();
+        if(samples.size() == NUMBER_OF_SAMPLES && averageSpeed / NUMBER_OF_SAMPLES > 2) {
+            if (averageSpeed / NUMBER_OF_SAMPLES > highestLimit) {
+                return ABOVE_THRESHOLD;
+            } else if (averageSpeed / NUMBER_OF_SAMPLES > lowestLimit) {
+                return BELOW_THRESHOLD;
             }
-            return;
         }
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                updateUI(location);
-            }
-        });
+        return WITHIN_THRESHOLD;
+    }
+
+    private void removeOldSample() {
+        if(samples.size() > NUMBER_OF_SAMPLES) {
+            samples.remove(0);
+        }
     }
 
     public double toKilometersPerHour(double speed){
         return speed * 3.6;
     }
 
-    private void setLocationRequestProperties(){
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
-        locationRequest.setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
 
-    }
 }

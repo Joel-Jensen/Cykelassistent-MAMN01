@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Cykelassistent">
         <activity
-            android:name=".Speedometer"
+            android:name=".SpeedometerView"
             android:exported="false" />
         <activity
             android:name=".HaveFallen"
