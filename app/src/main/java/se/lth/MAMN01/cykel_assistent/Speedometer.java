@@ -14,6 +14,14 @@ public class Speedometer {
     private double lowestLimit;
     private double highestLimit;
 
+    public double getLowestLimit() {
+        return lowestLimit;
+    }
+
+    public double getHighestLimit() {
+        return highestLimit;
+    }
+
     public Speedometer(double lowestLimit, double highestLimit) {
         samples = new LinkedList<>();
     }

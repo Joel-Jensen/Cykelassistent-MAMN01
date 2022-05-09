@@ -10,6 +10,11 @@ import android.location.Location;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +37,8 @@ public class SpeedometerView extends AppCompatActivity {
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     private static final int FASTEST_UPDATE_INTERVAL = 1;
     private TextView speedometerTV;
+    private EditText upperBound, lowerBound;
+    private Button setBoundaries;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -48,9 +55,18 @@ public class SpeedometerView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speedometer);
         speedometerTV = findViewById(R.id.speedometerView);
+        upperBound = findViewById(R.id.upperBound);
+        lowerBound = findViewById(R.id.lowerBound);
+        setBoundaries = findViewById(R.id.setBoundaries);
+        setBoundaries.setText("Set Boundaries");
+        setBoundaries.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                speedometer.setHighestLimit(Double.parseDouble(upperBound.getText().toString()));
+                speedometer.setLowestLimit(Double.parseDouble(lowerBound.getText().toString()));
+            }
+        });
         df = new DecimalFormat("##.##");
         speedometer = new Speedometer(5, 7);
-
 
         // Set all properties of LocationRequest.
         setLocationRequestProperties();
@@ -63,6 +79,7 @@ public class SpeedometerView extends AppCompatActivity {
 
         startLocationUpdates();
     }
+
 
     private void createLocationCallback() {
         locationCallback = new LocationCallback() {
@@ -77,8 +94,7 @@ public class SpeedometerView extends AppCompatActivity {
     }
 
     private void updateUI(Location location) {
-        if(location.hasSpeed()) {
-
+        if (location.hasSpeed()) {
             switch (speedometer.onSpeedUpdate(location.getSpeed())) {
                 case ABOVE_THRESHOLD:
                     speedometerTV.setText("Speed: "
@@ -92,17 +108,8 @@ public class SpeedometerView extends AppCompatActivity {
                     alertSound.release();
                     alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.too_slow);
                     alertSound.start();
-
             }
-
-            checkSpeedInterval(toKilometersPerHour(location.getSpeed()));
         }
-
-    }
-
-    private void checkSpeedInterval(double speed) {
-
-
     }
 
     @SuppressLint("MissingPermission")
