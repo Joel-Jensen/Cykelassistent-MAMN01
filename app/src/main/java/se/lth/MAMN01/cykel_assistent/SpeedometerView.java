@@ -1,5 +1,8 @@
 package se.lth.MAMN01.cykel_assistent;
 
+import static se.lth.MAMN01.cykel_assistent.Speedometer.ABOVE_THRESHOLD;
+import static se.lth.MAMN01.cykel_assistent.Speedometer.BELOW_THRESHOLD;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
@@ -27,13 +30,14 @@ public class SpeedometerView extends AppCompatActivity {
 
     public static final int DEFAULT_UPDATE_INTERVAL = 5;
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    private static final int FASTEST_UPDATE_INTERVAL = 125;
+    private static final int FASTEST_UPDATE_INTERVAL = 1;
     private TextView speedometerTV;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private DecimalFormat df;
     private MediaPlayer alertSound;
+    private Speedometer speedometer;
 
     // Variable to determine if we are tracking location.
     private boolean requestingLocationUpdates = false;
@@ -45,6 +49,8 @@ public class SpeedometerView extends AppCompatActivity {
         setContentView(R.layout.activity_speedometer);
         speedometerTV = findViewById(R.id.speedometerView);
         df = new DecimalFormat("##.##");
+        speedometer = new Speedometer(5, 7);
+
 
         // Set all properties of LocationRequest.
         setLocationRequestProperties();
@@ -74,7 +80,20 @@ public class SpeedometerView extends AppCompatActivity {
         if(location.hasSpeed()) {
             speedometerTV.setText("Speed: "
                     + df.format(toKilometersPerHour(location.getSpeed()))
-            + "km/h");
+                    + "km/h");
+            switch (speedometer.onSpeedUpdate(location.getSpeed())) {
+                case ABOVE_THRESHOLD:
+                    alertSound.release();
+                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.toofast);
+                    alertSound.start();
+                    break;
+                case BELOW_THRESHOLD:
+                    alertSound.release();
+                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.tooslow);
+                    alertSound.start();
+
+            }
+
             checkSpeedInterval(toKilometersPerHour(location.getSpeed()));
         }
 
@@ -132,7 +151,7 @@ public class SpeedometerView extends AppCompatActivity {
     private void setLocationRequestProperties(){
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL);
         locationRequest.setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
 
     }
