@@ -1,22 +1,5 @@
 package se.lth.MAMN01.cykel_assistent;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Build;
-import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,7 +34,7 @@ public class Speedometer {
 
     private int currentSpeedStatus() {
         double averageSpeed = samples.stream().mapToDouble(x -> x).sum();
-        if(samples.size() == NUMBER_OF_SAMPLES && averageSpeed / NUMBER_OF_SAMPLES > 0) {
+        if(samples.size() == NUMBER_OF_SAMPLES && averageSpeed / NUMBER_OF_SAMPLES > 2) {
             if (averageSpeed / NUMBER_OF_SAMPLES > highestLimit) {
                 samples = new LinkedList<>();
                 return ABOVE_THRESHOLD;

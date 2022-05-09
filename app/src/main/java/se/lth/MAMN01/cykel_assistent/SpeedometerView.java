@@ -78,18 +78,19 @@ public class SpeedometerView extends AppCompatActivity {
 
     private void updateUI(Location location) {
         if(location.hasSpeed()) {
-            speedometerTV.setText("Speed: "
-                    + df.format(toKilometersPerHour(location.getSpeed()))
-                    + "km/h");
+
             switch (speedometer.onSpeedUpdate(location.getSpeed())) {
                 case ABOVE_THRESHOLD:
+                    speedometerTV.setText("Speed: "
+                            + df.format(toKilometersPerHour(location.getSpeed()))
+                            + "km/h");
                     alertSound.release();
-                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.toofast);
+                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.too_fast);
                     alertSound.start();
                     break;
                 case BELOW_THRESHOLD:
                     alertSound.release();
-                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.tooslow);
+                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.too_slow);
                     alertSound.start();
 
             }
