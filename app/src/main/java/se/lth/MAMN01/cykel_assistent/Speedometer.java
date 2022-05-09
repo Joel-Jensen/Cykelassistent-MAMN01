@@ -1,65 +1,118 @@
 package se.lth.MAMN01.cykel_assistent;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 public class Speedometer extends AppCompatActivity {
 
+    public static final int DEFAULT_UPDATE_INTERVAL = 5;
+    private static final int PERMISSIONS_FINE_LOCATION = 99;
+    public static final double TOKILOMETERSPERHOUR = 3.6;
     TextView speedometerTV;
-    private FusedLocationProviderClient fusedLocationClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+
+    // Variable to determine if we are tracking location.
+    private boolean requestingLocationUpdates = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speedometer);
         speedometerTV = findViewById(R.id.speedometerView);
-        speedometerTV.setText("Speed");
 
-        ActivityResultLauncher<String[]> locationPermissionRequest =
-        registerForActivityResult(new ActivityResultContracts
-                .RequestMultiplePermissions(), result -> {
-            Boolean fineLocationGranted = result.getOrDefault(
-                    Manifest.permission.ACCESS_FINE_LOCATION, false);
-            fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-            Boolean coarseLocationGranted = result.getOrDefault(
-                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
-            if (fineLocationGranted != null && fineLocationGranted) {
-                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    speedometerTV.setText("False");
-                    return;
-                }
-                fusedLocationClient.getLastLocation()
-                        .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
+        // Set all properties of LocationRequest.
+        setLocationRequestProperties();
+        updateGPS();
+        createLocationCallback();
+        startLocationUpdates();
+    }
 
-                                if (location != null) {
-                                    speedometerTV.setText("Speed: " + location.getSpeed() +"m/s");
-                                }
-                            }
-                        });
-                } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                    // Only approximate location access granted.
-                } else {
-                    // No location access granted.
-                }
+    private void createLocationCallback() {
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                super.onLocationResult(locationResult);
+
+                //Save the location
+                updateUI(locationResult.getLastLocation());
             }
-        );
+        };
+    }
 
-        locationPermissionRequest.launch(new String[] {
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
+    private void updateUI(Location location) {
+        if(location.hasSpeed()) {
+            speedometerTV.setText("Speed: "
+                    + Double.toString(location.getSpeed() * TOKILOMETERSPERHOUR)
+            + "km/h");
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startLocationUpdates() {
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        updateGPS();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case PERMISSIONS_FINE_LOCATION:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    updateGPS();
+                }
+                else {
+                    Toast.makeText(this, "This app requires permission to use GPS",Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+        }
+    }
+
+    private void updateGPS() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED){
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+                requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION},PERMISSIONS_FINE_LOCATION);
+            }
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                updateUI(location);
+            }
         });
+    }
+
+    private void setLocationRequestProperties(){
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
+
     }
 }
