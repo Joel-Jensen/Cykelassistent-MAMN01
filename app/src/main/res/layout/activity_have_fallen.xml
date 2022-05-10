@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:insetTop="2dp"
         android:insetBottom="2dp"
+        android:onClick="callAmbulance"
         android:text="112"
         android:textSize="22sp"
         android:textStyle="bold"

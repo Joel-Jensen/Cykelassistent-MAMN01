@@ -6,11 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Camera;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 
@@ -24,26 +27,20 @@ public class HaveFallen extends AppCompatActivity {
     private boolean flashLightOn = false;
     private Handler h;
     private Runnable runnable;
-    private Button buttonCallAmbulance;
-    private Button buttonCallICE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_have_fallen);
+        getSupportActionBar().hide();
+
         activateFlashlight();
-        callAmbulance();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        h.removeCallbacks(runnable);
-        try {
-            mCameraManager.setTorchMode(mCameraId, false);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+        turnOffFlashLight();
     }
 
     private void activateFlashlight() {
@@ -78,31 +75,29 @@ public class HaveFallen extends AppCompatActivity {
         }
     }
 
-    public void callAmbulance() {
-        buttonCallAmbulance = findViewById(R.id.button2);
-        buttonCallAmbulance.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel: 112"));
-                try {
-                    mCameraManager.setTorchMode(mCameraId, false);
-                } catch (CameraAccessException e) {
-                    e.printStackTrace();
-                }
-                startActivity(intent);
-            }
-        });
-    }
 
-    public void callICE(View view) {
-        Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel: 0722344344"));
+    private void turnOffFlashLight() {
+        h.removeCallbacks(runnable);
         try {
             mCameraManager.setTorchMode(mCameraId, false);
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    public void callAmbulance(View view) {
+        turnOffFlashLight();
+
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel: 112"));
+        startActivity(intent);
+    }
+
+    public void callICE(View view) {
+        turnOffFlashLight();
+
+        Intent intent = new Intent(Intent.ACTION_DIAL);
+        intent.setData(Uri.parse("tel: 0722344344"));
         startActivity(intent);
     }
 }
