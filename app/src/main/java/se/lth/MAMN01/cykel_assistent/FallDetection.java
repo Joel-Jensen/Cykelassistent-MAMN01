@@ -53,7 +53,7 @@ public class FallDetection implements AccelerometerChanged {
         if(potentialCrashTimestamp + 10000 > System.currentTimeMillis()) {
             boolean lyingStill = true;
             for(double v : samples) {
-                if(v < 8.6 || v > 10.9) {
+                if(v < 7.8 || v > 11.5) {
                     lyingStill = false;
                 }
             }

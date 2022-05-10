@@ -3,10 +3,8 @@ package se.lth.MAMN01.cykel_assistent;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void showFallDetection(View view) {
         Intent intent = new Intent(this, FallDetectionView.class);
+        startActivity(intent);
+    }
+
+    public void showSpeedometer(View view) {
+        Intent intent = new Intent(this, SpeedometerView.class);
         startActivity(intent);
     }
 }
