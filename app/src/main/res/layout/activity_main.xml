@@ -23,8 +23,8 @@
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="showAcceleration"
-        android:text="@string/Sensor_1"
+        android:onClick="showFallDetection"
+        android:text="@string/fall_detection"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
