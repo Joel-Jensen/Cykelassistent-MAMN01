@@ -1,5 +1,7 @@
 package se.lth.MAMN01.cykel_assistent;
 
+import android.util.Log;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,19 +10,11 @@ public class Speedometer {
     public static final int ABOVE_THRESHOLD = 1;
     public static final int BELOW_THRESHOLD = -1;
     public static final int WITHIN_THRESHOLD = 0;
+    public static final int STANDING_STILL_THRESHOLD = 2;
     private List<Double> samples;
-    private int SAMPLES_PER_SECONDS = 1;
     private int NUMBER_OF_SAMPLES = 10;
-    private double lowestLimit;
-    private double highestLimit;
-
-    public double getLowestLimit() {
-        return lowestLimit;
-    }
-
-    public double getHighestLimit() {
-        return highestLimit;
-    }
+    private double lowestLimit = 0;
+    private double highestLimit = 0;
 
     public Speedometer(double lowestLimit, double highestLimit) {
         samples = new LinkedList<>();
@@ -41,17 +35,17 @@ public class Speedometer {
     }
 
     private int currentSpeedStatus() {
-        double averageSpeed = samples.stream().mapToDouble(x -> x).sum();
-        if(samples.size() == NUMBER_OF_SAMPLES && averageSpeed / NUMBER_OF_SAMPLES > 2) {
-            if (averageSpeed / NUMBER_OF_SAMPLES > highestLimit) {
-                samples = new LinkedList<>();
-                return ABOVE_THRESHOLD;
-            } else if (averageSpeed / NUMBER_OF_SAMPLES > lowestLimit) {
-                samples = new LinkedList<>();
-                return BELOW_THRESHOLD;
-            }
+        double averageSpeed = samples.stream().mapToDouble(x -> x).sum() / NUMBER_OF_SAMPLES;
+
+        if(averageSpeed < STANDING_STILL_THRESHOLD || samples.size() < NUMBER_OF_SAMPLES) {
+            return WITHIN_THRESHOLD;
         }
-        return WITHIN_THRESHOLD;
+
+        samples = new LinkedList<>();
+        if (averageSpeed > highestLimit) {
+            return ABOVE_THRESHOLD;
+        }
+        return BELOW_THRESHOLD;
     }
 
     private void removeOldSample() {

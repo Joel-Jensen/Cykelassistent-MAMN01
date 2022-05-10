@@ -21,7 +21,11 @@
         android:theme="@style/Theme.Cykelassistent">
         <activity
             android:name=".SpeedometerView"
-            android:exported="false" />
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity
             android:name=".HaveFallen"
             android:parentActivityName=".MainActivity">
@@ -38,13 +42,6 @@
         </activity>
         <activity
             android:name=".DisplayAcceleratorValuesActivity"
-            android:parentActivityName=".MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".DisplayRoadQuality"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

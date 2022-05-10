@@ -2,14 +2,18 @@ package se.lth.MAMN01.cykel_assistent;
 
 import static se.lth.MAMN01.cykel_assistent.Speedometer.ABOVE_THRESHOLD;
 import static se.lth.MAMN01.cykel_assistent.Speedometer.BELOW_THRESHOLD;
+import static se.lth.MAMN01.cykel_assistent.Speedometer.WITHIN_THRESHOLD;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -33,7 +37,7 @@ import java.text.DecimalFormat;
 
 public class SpeedometerView extends AppCompatActivity {
 
-    public static final int DEFAULT_UPDATE_INTERVAL = 5;
+    public static final int DEFAULT_UPDATE_INTERVAL = 1;
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     private static final int FASTEST_UPDATE_INTERVAL = 1;
     private TextView speedometerTV;
@@ -48,6 +52,9 @@ public class SpeedometerView extends AppCompatActivity {
 
     // Variable to determine if we are tracking location.
     private boolean requestingLocationUpdates = false;
+    private Vibrator vibrationService;
+    private long[] patternSlowDown = {0, 2000, 1000, 2000};
+    private long[] patternSpeedUp = {0, 200, 250, 200, 250, 200, 0, 200, 250, 200, 250, 200};
 
 
     @Override
@@ -57,16 +64,17 @@ public class SpeedometerView extends AppCompatActivity {
         speedometerTV = findViewById(R.id.speedometerView);
         upperBound = findViewById(R.id.upperBound);
         lowerBound = findViewById(R.id.lowerBound);
-        setBoundaries = findViewById(R.id.setBoundaries);
-        setBoundaries.setText("Set Boundaries");
-        setBoundaries.setOnClickListener(new View.OnClickListener() {
+        //setBoundaries = findViewById(R.id.setBoundaries);
+        //setBoundaries.setText("Set Boundaries");
+        speedometer = new Speedometer(5, 7);
+        /*setBoundaries.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 speedometer.setHighestLimit(Double.parseDouble(upperBound.getText().toString()));
                 speedometer.setLowestLimit(Double.parseDouble(lowerBound.getText().toString()));
             }
-        });
+        });*/
         df = new DecimalFormat("##.##");
-        speedometer = new Speedometer(5, 7);
+
 
         // Set all properties of LocationRequest.
         setLocationRequestProperties();
@@ -95,19 +103,38 @@ public class SpeedometerView extends AppCompatActivity {
 
     private void updateUI(Location location) {
         if (location.hasSpeed()) {
-            switch (speedometer.onSpeedUpdate(location.getSpeed())) {
-                case ABOVE_THRESHOLD:
-                    speedometerTV.setText("Speed: "
-                            + df.format(toKilometersPerHour(location.getSpeed()))
-                            + "km/h");
-                    alertSound.release();
-                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.too_fast);
-                    alertSound.start();
-                    break;
-                case BELOW_THRESHOLD:
-                    alertSound.release();
-                    alertSound = MediaPlayer.create(SpeedometerView.this, R.raw.too_slow);
-                    alertSound.start();
+            int speed = speedometer.onSpeedUpdate(location.getSpeed());
+            speedometerTV.setText("Speed: "
+                    + df.format(toKilometersPerHour(location.getSpeed()))
+                    + "km/h");
+
+            if(speed == WITHIN_THRESHOLD) {
+                return;
+            }
+
+            int sound;
+            long[] vibrationPatter;
+            if(speed == ABOVE_THRESHOLD) {
+                sound = R.raw.too_fast;
+                vibrationPatter = patternSlowDown;
+            } else {
+                sound = R.raw.too_slow;
+                vibrationPatter = patternSpeedUp;
+            }
+
+            if(alertSound != null) {
+                alertSound.release();
+            }
+
+            alertSound = MediaPlayer.create(SpeedometerView.this, sound);
+            alertSound.start();
+
+            vibrationService = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrationService.vibrate(VibrationEffect.createWaveform(vibrationPatter, -1));
+            } else {
+                //deprecated in API 26
+                vibrationService.vibrate(vibrationPatter, 0);
             }
         }
     }
