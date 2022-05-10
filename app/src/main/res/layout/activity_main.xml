@@ -112,7 +112,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:text="ICE"
         app:layout_constraintBottom_toBottomOf="@+id/editTextPhone"
         app:layout_constraintStart_toStartOf="parent" />
