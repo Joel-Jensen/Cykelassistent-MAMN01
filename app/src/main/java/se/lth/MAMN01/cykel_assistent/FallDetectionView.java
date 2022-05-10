@@ -20,7 +20,7 @@ public class FallDetectionView extends AppCompatActivity implements SensorEventL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fall_detection_view);
         fallDetection = new FallDetection(() -> {
-            Intent intent = new Intent(this, HaveFallen.class);
+            Intent intent = new Intent(this, HaveFallenCountdownActivity.class);
             startActivity(intent);
         });
 
