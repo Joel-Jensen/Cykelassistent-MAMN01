@@ -33,4 +33,9 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, SpeedometerView.class);
         startActivity(intent);
     }
+
+    public void launchApplication(View view) {
+        Intent intent = new Intent(this, launchedApp.class);
+        startActivity(intent);
+    }
 }
