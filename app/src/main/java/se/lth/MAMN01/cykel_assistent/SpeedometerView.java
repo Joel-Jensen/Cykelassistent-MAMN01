@@ -64,15 +64,15 @@ public class SpeedometerView extends AppCompatActivity {
         speedometerTV = findViewById(R.id.speedometerView);
         upperBound = findViewById(R.id.upperBound);
         lowerBound = findViewById(R.id.lowerBound);
-        //setBoundaries = findViewById(R.id.setBoundaries);
-        //setBoundaries.setText("Set Boundaries");
+        setBoundaries = findViewById(R.id.setBoundaries);
+        setBoundaries.setText("Set Boundaries");
         speedometer = new Speedometer(5, 7);
-        /*setBoundaries.setOnClickListener(new View.OnClickListener() {
+        setBoundaries.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 speedometer.setHighestLimit(Double.parseDouble(upperBound.getText().toString()));
                 speedometer.setLowestLimit(Double.parseDouble(lowerBound.getText().toString()));
             }
-        });*/
+        });
         df = new DecimalFormat("##.##");
 
 
