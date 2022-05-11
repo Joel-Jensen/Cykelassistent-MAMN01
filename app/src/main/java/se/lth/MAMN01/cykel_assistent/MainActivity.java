@@ -6,6 +6,7 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
@@ -59,7 +60,10 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if(startIntent) {
-                    Intent intent = new Intent(getApplicationContext(), FallDetectionView.class);
+                    Intent intent = new Intent(getApplicationContext(), launchedApp.class);
+                    intent.putExtra("phone", phoneNumber.getText().toString());
+                    intent.putExtra("minSpeed", minSpeed.getText().toString());
+                    intent.putExtra("maxSpeed", maxSpeed.getText().toString());
                     startActivity(intent);
                 }
             }
