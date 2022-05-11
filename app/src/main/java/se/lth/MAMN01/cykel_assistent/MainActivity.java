@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+   public int speed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

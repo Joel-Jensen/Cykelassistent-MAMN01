@@ -21,14 +21,11 @@
         android:theme="@style/Theme.Cykelassistent">
         <activity
             android:name=".HaveFallenCountdownActivity"
-            android:exported="false" >
+            android:exported="false">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity
-            android:name=".launchedApp"
-            android:exported="false" />
         <activity
             android:name=".SpeedometerView"
             android:parentActivityName=".MainActivity">
