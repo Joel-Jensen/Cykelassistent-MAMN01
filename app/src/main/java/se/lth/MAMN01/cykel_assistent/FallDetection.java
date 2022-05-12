@@ -43,6 +43,10 @@ public class FallDetection implements AccelerometerChanged {
     }
 
     private void calculateMotionChanges() {
+        if(samples.size() < NUMBER_OF_SAMPLES) {
+            return;
+        }
+
         for(int i=0; i < samples.size(); i++) {
             if(samples.get(i) < 2 || samples.get(i) > 30) {
                 potentialCrashTimestamp = System.currentTimeMillis();
@@ -59,6 +63,7 @@ public class FallDetection implements AccelerometerChanged {
             }
             if(lyingStill) {
                 Log.w("CRASH", "Lying still");
+                samples = new LinkedList<>();
                 callbackOnFallen.methodToCallBack();
             }
         }
