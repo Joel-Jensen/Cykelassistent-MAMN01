@@ -1,8 +1,12 @@
 package se.lth.MAMN01.cykel_assistent;
 
+import android.app.Service;
 import android.content.Intent;
 import android.hardware.SensorEvent;
+import android.os.IBinder;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -12,7 +16,6 @@ public class FallDetection implements AccelerometerChanged  {
     private List<Double> samples;
     private long lastSample = 0;
     private Callback callbackOnFallen;
-
     private int SAMPLES_PER_SECONDS = 10;
     private int NUMBER_OF_SAMPLES = 20;
     private long potentialCrashTimestamp = 0;
