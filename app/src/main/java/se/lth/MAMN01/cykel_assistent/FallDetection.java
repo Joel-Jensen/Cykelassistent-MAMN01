@@ -7,7 +7,7 @@ import android.util.Log;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FallDetection implements AccelerometerChanged {
+public class FallDetection implements AccelerometerChanged  {
 
     private List<Double> samples;
     private long lastSample = 0;
