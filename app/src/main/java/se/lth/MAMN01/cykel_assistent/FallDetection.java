@@ -67,6 +67,7 @@ public class FallDetection implements AccelerometerChanged  {
             if(lyingStill) {
                 Log.w("CRASH", "Lying still");
                 samples = new LinkedList<>();
+                potentialCrashTimestamp = 0;
                 callbackOnFallen.methodToCallBack();
             }
         }
