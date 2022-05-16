@@ -62,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
                 if(startIntent) {
                     Intent intent = new Intent(getApplicationContext(), launchedApp.class);
                     intent.putExtra("phone", phoneNumber.getText().toString());
-                    intent.putExtra("minSpeed", minSpeed.getText().toString());
-                    intent.putExtra("maxSpeed", maxSpeed.getText().toString());
+                    intent.putExtra("minSpeed", Integer.parseInt(minSpeed.getText().toString()));
+                    intent.putExtra("maxSpeed", Integer.parseInt(maxSpeed.getText().toString()));
                     startActivity(intent);
                 }
             }

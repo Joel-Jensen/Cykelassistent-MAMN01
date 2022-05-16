@@ -1,7 +1,6 @@
 package se.lth.MAMN01.cykel_assistent;
 
 import static se.lth.MAMN01.cykel_assistent.Speedometer.ABOVE_THRESHOLD;
-import static se.lth.MAMN01.cykel_assistent.Speedometer.BELOW_THRESHOLD;
 import static se.lth.MAMN01.cykel_assistent.Speedometer.WITHIN_THRESHOLD;
 
 import android.Manifest;
@@ -14,8 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -62,15 +59,15 @@ public class SpeedometerView extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speedometer);
         speedometerTV = findViewById(R.id.speedometerView);
-        upperBound = findViewById(R.id.upperBound);
-        lowerBound = findViewById(R.id.lowerBound);
+        upperBound = findViewById(R.id.lowerBound);
+        lowerBound = findViewById(R.id.upperBound);
         setBoundaries = findViewById(R.id.setBoundaries);
         setBoundaries.setText("Set Boundaries");
         speedometer = new Speedometer(5, 7);
         setBoundaries.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                speedometer.setHighestLimit(Double.parseDouble(upperBound.getText().toString()));
-                speedometer.setLowestLimit(Double.parseDouble(lowerBound.getText().toString()));
+                speedometer.setHighestLimit(Integer.parseInt(upperBound.getText().toString()));
+                speedometer.setLowestLimit(Integer.parseInt(lowerBound.getText().toString()));
             }
         });
         df = new DecimalFormat("##.##");

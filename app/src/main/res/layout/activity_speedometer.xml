@@ -44,7 +44,7 @@
         app:layout_constraintVertical_bias="0.326" />
 
     <EditText
-        android:id="@+id/lowerBound"
+        android:id="@+id/upperBound"
         android:layout_width="89dp"
         android:layout_height="42dp"
         android:ems="10"
@@ -58,7 +58,7 @@
         app:layout_constraintVertical_bias="0.217" />
 
     <EditText
-        android:id="@+id/upperBound"
+        android:id="@+id/lowerBound"
         android:layout_width="90dp"
         android:layout_height="50dp"
         android:digits="0123456789."

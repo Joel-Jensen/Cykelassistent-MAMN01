@@ -12,6 +12,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -24,10 +26,9 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Chronometer;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,7 +45,7 @@ import java.util.TimeZone;
 
 public class launchedApp extends AppCompatActivity implements SensorEventListener {
     TextView tvTimer;
-    long startTime, timeInMilliseconds = 0;
+    long timeInMilliseconds = 0;
     Handler customHandler = new Handler();
     private FallDetection fallDetection;
     private SensorManager mSensorManager;
@@ -53,8 +54,9 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
     private static final int PERMISSIONS_FINE_LOCATION = 99;
     private static final int FASTEST_UPDATE_INTERVAL = 1;
     private TextView speedometerTV;
-    private EditText upperBound, lowerBound;
-    private Button setBoundaries;
+    private TextView upperBound, lowerBound;
+    private Button toggleTimer;
+    private int maxSpeed, minSpeed;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
@@ -66,12 +68,20 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
     private Vibrator vibrationService;
     private long[] patternSlowDown = {0, 2000, 1000, 2000};
     private long[] patternSpeedUp = {0, 200, 250, 200, 250, 200, 0, 200, 250, 200, 250, 200};
+    private boolean paused = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_launched_app);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#F0773D\">" + getString(R.string.app_name) + "</font>"));
+
+        Bundle extras = getIntent().getExtras();
+        minSpeed = extras.getInt("minSpeed");
+        maxSpeed = extras.getInt("maxSpeed");
+
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         fallDetection = new FallDetection(() -> {
             Intent intent = new Intent(this, HaveFallenCountdownActivity.class);
@@ -83,15 +93,8 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         speedometerTV = findViewById(R.id.speedometerView);
         upperBound = findViewById(R.id.upperBound);
         lowerBound = findViewById(R.id.lowerBound);
-        setBoundaries = findViewById(R.id.setBoundaries);
-        setBoundaries.setText("Set Boundaries");
-        speedometer = new Speedometer(5, 7);
-        setBoundaries.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                speedometer.setHighestLimit(Double.parseDouble(upperBound.getText().toString()));
-                speedometer.setLowestLimit(Double.parseDouble(lowerBound.getText().toString()));
-            }
-        });
+        toggleTimer = findViewById(R.id.toggleTimer);
+        speedometer = new Speedometer(minSpeed, maxSpeed);
         df = new DecimalFormat("##.##");
 
 
@@ -105,6 +108,8 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         createLocationCallback();
 
         startLocationUpdates();
+        updateSpeedLimit();
+        customHandler.post(updateTimerThread);
     }
 
     public static String getDateFromMillis(long d) {
@@ -113,9 +118,15 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         return df.format(d);
     }
 
-    public void start(View v) {
-        startTime = SystemClock.uptimeMillis();
-        customHandler.postDelayed(updateTimerThread, 0);
+    public void toggleTimer(View v) {
+        paused = !paused;
+        if(paused) {
+            customHandler.removeCallbacks(updateTimerThread);
+            toggleTimer.setText("Start");
+        } else {
+            customHandler.post(updateTimerThread);
+            toggleTimer.setText("Stop");
+        }
     }
 
     protected void onResume() {
@@ -128,13 +139,51 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         mSensorManager.unregisterListener(this);
     }
 
-    public void stop(View v) {
-        customHandler.removeCallbacks(updateTimerThread);
+    public void increaseLow(View v) {
+        minSpeed++;
+        if(minSpeed == maxSpeed) {
+            maxSpeed++;
+        }
+        updateSpeedLimit();
     }
+
+    public void decreaseLow(View v) {
+        minSpeed--;
+        if(minSpeed < 0) {
+            minSpeed = 0;
+        }
+        updateSpeedLimit();
+    }
+
+    public void increaseHigh(View v) {
+        maxSpeed++;
+        updateSpeedLimit();
+    }
+
+    public void decreaseHigh(View v) {
+        maxSpeed--;
+
+        if(maxSpeed < 1) {
+            maxSpeed = 1;
+        }
+
+        if(maxSpeed == minSpeed) {
+            minSpeed--;
+        }
+        updateSpeedLimit();
+    }
+
+    private void updateSpeedLimit() {
+        speedometer.setHighestLimit(maxSpeed);
+        speedometer.setLowestLimit(minSpeed);
+        upperBound.setText(Integer.toString(maxSpeed));
+        lowerBound.setText(Integer.toString(minSpeed));
+    }
+
 
     private Runnable updateTimerThread = new Runnable() {
         public void run() {
-            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+            timeInMilliseconds += 1000;
             tvTimer.setText(getDateFromMillis(timeInMilliseconds));
             customHandler.postDelayed(this, 1000);
         }
@@ -154,11 +203,13 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
 
     private void updateUI(Location location) {
         if (location.hasSpeed()) {
-            int speed = speedometer.onSpeedUpdate(location.getSpeed());
-            speedometerTV.setText("Speed: "
-                    + df.format(toKilometersPerHour(location.getSpeed()))
-                    + "km/h");
+            speedometerTV.setText(df.format(toKilometersPerHour(location.getSpeed())) + " km/h");
 
+            if(paused) {
+                return;
+            }
+
+            int speed = speedometer.onSpeedUpdate(location.getSpeed());
             if(speed == WITHIN_THRESHOLD) {
                 return;
             }
@@ -181,12 +232,7 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
             alertSound.start();
 
             vibrationService = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrationService.vibrate(VibrationEffect.createWaveform(vibrationPatter, -1));
-            } else {
-                //deprecated in API 26
-                vibrationService.vibrate(vibrationPatter, 0);
-            }
+            vibrationService.vibrate(VibrationEffect.createWaveform(vibrationPatter, -1));
         }
     }
 

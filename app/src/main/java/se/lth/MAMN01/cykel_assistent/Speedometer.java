@@ -13,10 +13,12 @@ public class Speedometer {
     public static final int STANDING_STILL_THRESHOLD = 3;
     private List<Double> samples;
     private int NUMBER_OF_SAMPLES = 10;
-    private double lowestLimit = 0;
-    private double highestLimit = 0;
+    private int lowestLimit = 0;
+    private int highestLimit = 0;
 
-    public Speedometer(double lowestLimit, double highestLimit) {
+    public Speedometer(int lowestLimit, int highestLimit) {
+        this.lowestLimit = lowestLimit;
+        this.highestLimit = highestLimit;
         samples = new LinkedList<>();
     }
 
@@ -28,11 +30,11 @@ public class Speedometer {
         return currentSpeedStatus();
     }
 
-    public void setLowestLimit(double lowestLimit) {
+    public void setLowestLimit(int lowestLimit) {
         this.lowestLimit = lowestLimit;
     }
 
-    public void setHighestLimit(double highestLimit) {
+    public void setHighestLimit(int highestLimit) {
         this.highestLimit = highestLimit;
     }
 
