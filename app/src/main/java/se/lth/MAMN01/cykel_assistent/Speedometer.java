@@ -10,7 +10,7 @@ public class Speedometer {
     public static final int ABOVE_THRESHOLD = 1;
     public static final int BELOW_THRESHOLD = -1;
     public static final int WITHIN_THRESHOLD = 0;
-    public static final int STANDING_STILL_THRESHOLD = 3;
+    public static final int STANDING_STILL_THRESHOLD = 0;
     private List<Double> samples;
     private int NUMBER_OF_SAMPLES = 10;
     private int lowestLimit = 0;
@@ -44,13 +44,17 @@ public class Speedometer {
         if(samples.size() < NUMBER_OF_SAMPLES) {
             return WITHIN_THRESHOLD;
         }
-        samples = new LinkedList<>();
+
         if (averageSpeed > highestLimit) {
+            samples = new LinkedList<>();
             return ABOVE_THRESHOLD;
         }
-        if (averageSpeed > lowestLimit) {
+
+        if (averageSpeed < lowestLimit) {
+            samples = new LinkedList<>();
             return BELOW_THRESHOLD;
         }
+
         return WITHIN_THRESHOLD;
     }
 
