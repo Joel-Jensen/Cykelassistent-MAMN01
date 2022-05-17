@@ -179,7 +179,7 @@ public class HaveFallen extends AppCompatActivity implements SensorEventListener
 
         int shakes = 0;
         for(int i=0; i < samples.size(); i++) {
-            if(samples.get(i) < 5 || samples.get(i) > 20) {
+            if(samples.get(i) < 5 || samples.get(i) > 15) {
                 shakes++;
             }
         }
