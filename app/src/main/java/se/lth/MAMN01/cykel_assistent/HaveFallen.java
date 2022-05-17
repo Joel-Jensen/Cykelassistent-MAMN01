@@ -14,6 +14,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -45,6 +46,7 @@ public class HaveFallen extends AppCompatActivity implements SensorEventListener
     private String phone;
     private Sensor mAccelerometer;
     private SensorManager mSensorManager;
+    private MediaPlayer alertSound;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,10 @@ public class HaveFallen extends AppCompatActivity implements SensorEventListener
         samples = new LinkedList<>();
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        alertSound = MediaPlayer.create(getApplicationContext(), R.raw.warning);
+        alertSound.setLooping(true);
+        alertSound.start();
     }
 
     @Override
@@ -87,16 +93,19 @@ public class HaveFallen extends AppCompatActivity implements SensorEventListener
     protected void onDestroy() {
         super.onDestroy();
         turnOffFlashLight();
+        alertSound.release();
     }
 
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        alertSound.start();
     }
 
     protected void onPause() {
         super.onPause();
         mSensorManager.unregisterListener(this);
+        alertSound.pause();
     }
 
     private void activateFlashlight() {
