@@ -5,6 +5,7 @@ import static se.lth.MAMN01.cykel_assistent.Speedometer.WITHIN_THRESHOLD;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.Group;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -56,6 +57,7 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
     private TextView speedometerTV;
     private TextView upperBound, lowerBound;
     private Button toggleTimer;
+    private Group fallDetectionInfoGroup;
     private int maxSpeed, minSpeed;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
@@ -97,6 +99,7 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         upperBound = findViewById(R.id.upperBound);
         lowerBound = findViewById(R.id.lowerBound);
         toggleTimer = findViewById(R.id.toggleTimer);
+        fallDetectionInfoGroup = findViewById(R.id.fallDetectionInfoGroup);
         speedometer = new Speedometer(minSpeed, maxSpeed);
 
 
@@ -125,9 +128,11 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         if(paused) {
             customHandler.removeCallbacks(updateTimerThread);
             toggleTimer.setText("Starta");
+            fallDetectionInfoGroup.setVisibility(View.GONE);
         } else {
             customHandler.post(updateTimerThread);
             toggleTimer.setText("Stopp");
+            fallDetectionInfoGroup.setVisibility(View.VISIBLE);
         }
     }
 
