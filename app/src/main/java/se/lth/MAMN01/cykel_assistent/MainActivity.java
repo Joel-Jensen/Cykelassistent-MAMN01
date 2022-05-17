@@ -25,32 +25,37 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(Html.fromHtml("<font color=\"#F0773D\">" + getString(R.string.app_name) + "</font>"));
 
         TextView phoneNumber = findViewById(R.id.editPhone);
-        TextView minSpeed = findViewById(R.id.editMinSpeed);
-        TextView maxSpeed = findViewById(R.id.editMaxSpeed);
+        TextView minSpeedView = findViewById(R.id.editMinSpeed);
+        TextView maxSpeedView = findViewById(R.id.editMaxSpeed);
         Button startButton = findViewById(R.id.startButton);
         startButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 boolean startIntent = true;
 
-                if( TextUtils.isEmpty(minSpeed.getText())) {
-                    minSpeed.setError("Fyll i");
+                if( TextUtils.isEmpty(minSpeedView.getText())) {
+                    minSpeedView.setError("Fyll i");
                     return;
                 }
 
-                int speed = (int) Integer.parseInt(minSpeed.getText().toString());
-                if(speed < 2 || speed > 40) {
-                    minSpeed.setError("Måste vara mellan 2-40");
+                int minSpeed = (int) Integer.parseInt(minSpeedView.getText().toString());
+                if(minSpeed < 2 || minSpeed > 40) {
+                    minSpeedView.setError("Måste vara mellan 2-40");
                     startIntent = false;
                 }
 
-                if( TextUtils.isEmpty(maxSpeed.getText())) {
-                    maxSpeed.setError("Fyll i");
+                if( TextUtils.isEmpty(maxSpeedView.getText())) {
+                    maxSpeedView.setError("Fyll i");
                     return;
                 }
 
-                speed = (int) Integer.parseInt(maxSpeed.getText().toString());
-                if(speed < 2 || speed > 40) {
-                    maxSpeed.setError("Måste vara mellan 2-40");
+                int maxSpeed = (int) Integer.parseInt(maxSpeedView.getText().toString());
+                if(maxSpeed < 2 || maxSpeed > 60) {
+                    maxSpeedView.setError("Måste vara mellan 2-60");
+                    startIntent = false;
+                }
+
+                if(maxSpeed <= minSpeed) {
+                    maxSpeedView.setError("Måste vara högre än min");
                     startIntent = false;
                 }
 
@@ -62,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
                 if(startIntent) {
                     Intent intent = new Intent(getApplicationContext(), launchedApp.class);
                     intent.putExtra("phone", phoneNumber.getText().toString());
-                    intent.putExtra("minSpeed", Integer.parseInt(minSpeed.getText().toString()));
-                    intent.putExtra("maxSpeed", Integer.parseInt(maxSpeed.getText().toString()));
+                    intent.putExtra("minSpeed", Integer.parseInt(minSpeedView.getText().toString()));
+                    intent.putExtra("maxSpeed", Integer.parseInt(maxSpeedView.getText().toString()));
                     startActivity(intent);
                 }
             }

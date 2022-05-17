@@ -14,19 +14,20 @@
         android:insetBottom="2dp"
         android:onClick="callAmbulance"
         android:text="112"
-        android:textSize="22sp"
+        android:textSize="60sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/smsSent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/smsSent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SMS has been sent to ICE"
+        android:textColor="#1C1C1C"
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/button2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,8 +41,20 @@
         android:layout_height="wrap_content"
         android:onClick="callICE"
         android:text="Call ICE"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button2" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Skaka telefonen för att stänga av"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/smsSent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

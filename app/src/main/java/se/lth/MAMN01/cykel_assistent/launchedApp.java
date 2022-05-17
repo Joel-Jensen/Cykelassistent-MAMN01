@@ -84,8 +84,12 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
 
         tvTimer = (TextView) findViewById(R.id.tvTimer);
         fallDetection = new FallDetection(() -> {
-            Intent intent = new Intent(this, HaveFallenCountdownActivity.class);
-            startActivity(intent);
+            if(! paused) {
+                toggleTimer(null);
+                Intent intent = new Intent(this, HaveFallenCountdownActivity.class);
+                intent.putExtra("phone", extras.getString("phone"));
+                startActivity(intent);
+            }
         });
 
         mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -122,10 +126,10 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         paused = !paused;
         if(paused) {
             customHandler.removeCallbacks(updateTimerThread);
-            toggleTimer.setText("Start");
+            toggleTimer.setText("Starta");
         } else {
             customHandler.post(updateTimerThread);
-            toggleTimer.setText("Stop");
+            toggleTimer.setText("Stopp");
         }
     }
 
@@ -217,10 +221,10 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
             int sound;
             long[] vibrationPatter;
             if(speed == ABOVE_THRESHOLD) {
-                sound = R.raw.too_fast;
+                sound = R.raw.slower;
                 vibrationPatter = patternSlowDown;
             } else {
-                sound = R.raw.too_slow;
+                sound = R.raw.faster;
                 vibrationPatter = patternSpeedUp;
             }
 

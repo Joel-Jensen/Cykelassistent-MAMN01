@@ -62,6 +62,8 @@
         android:layout_marginBottom="16dp"
         android:ems="10"
         android:hint="23"
+        android:nextFocusForward="@+id/editMaxSpeed"
+        android:imeOptions="actionNext"
         android:inputType="number"
         android:textColorHint="#8E8E8E"
         app:layout_constraintBottom_toTopOf="@+id/startButton"

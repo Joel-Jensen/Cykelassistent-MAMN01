@@ -112,10 +112,10 @@ public class SpeedometerView extends AppCompatActivity {
             int sound;
             long[] vibrationPatter;
             if(speed == ABOVE_THRESHOLD) {
-                sound = R.raw.too_fast;
+                sound = R.raw.slower;
                 vibrationPatter = patternSlowDown;
             } else {
-                sound = R.raw.too_slow;
+                sound = R.raw.faster;
                 vibrationPatter = patternSpeedUp;
             }
 

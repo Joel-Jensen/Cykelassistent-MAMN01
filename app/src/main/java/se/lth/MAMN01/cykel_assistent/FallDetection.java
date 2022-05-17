@@ -32,7 +32,6 @@ public class FallDetection implements AccelerometerChanged  {
         }
         float[] aVectors = sensorEvent.values;
         double vector = Math.sqrt(Math.pow(aVectors[0], 2) + Math.pow(aVectors[1], 2) + Math.pow(aVectors[2], 2));
-        Log.i("vector: ", Double.toString(vector));
         samples.add(vector);
         lastSample = System.currentTimeMillis();
         removeOldSample();
@@ -53,7 +52,6 @@ public class FallDetection implements AccelerometerChanged  {
         for(int i=0; i < samples.size(); i++) {
             if(samples.get(i) < 2 || samples.get(i) > 30) {
                 potentialCrashTimestamp = System.currentTimeMillis();
-                Log.w("CRASH", "Found crash");
             }
         }
 
@@ -65,7 +63,6 @@ public class FallDetection implements AccelerometerChanged  {
                 }
             }
             if(lyingStill) {
-                Log.w("CRASH", "Lying still");
                 samples = new LinkedList<>();
                 potentialCrashTimestamp = 0;
                 callbackOnFallen.methodToCallBack();
