@@ -60,7 +60,6 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
     private FusedLocationProviderClient fusedLocationProviderClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
-    private DecimalFormat df;
     private MediaPlayer alertSound;
     private Speedometer speedometer;
     // Variable to determine if we are tracking location.
@@ -99,7 +98,6 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
         lowerBound = findViewById(R.id.lowerBound);
         toggleTimer = findViewById(R.id.toggleTimer);
         speedometer = new Speedometer(minSpeed, maxSpeed);
-        df = new DecimalFormat("##.##");
 
 
         // Set all properties of LocationRequest.
@@ -207,13 +205,14 @@ public class launchedApp extends AppCompatActivity implements SensorEventListene
 
     private void updateUI(Location location) {
         if (location.hasSpeed()) {
-            speedometerTV.setText(df.format(toKilometersPerHour(location.getSpeed())) + " km/h");
+            int kmph = (int) toKilometersPerHour(location.getSpeed());
+            speedometerTV.setText(Integer.toString(kmph) + " km/h");
 
             if(paused) {
                 return;
             }
 
-            int speed = speedometer.onSpeedUpdate(location.getSpeed());
+            int speed = speedometer.onSpeedUpdate(kmph);
             if(speed == WITHIN_THRESHOLD) {
                 return;
             }
